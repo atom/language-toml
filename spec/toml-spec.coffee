@@ -1,5 +1,3 @@
-TextMatePackage = require 'text-mate-package'
-
 describe "TOML grammar", ->
   grammar = null
 
