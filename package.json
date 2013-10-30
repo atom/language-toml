@@ -1,13 +1,13 @@
 {
-  "name": "toml",
+  "name": "language-toml",
   "version": "0.3.0",
   "description": "Syntax highlighting for Tom's Obvious, Minimal Language (TOML).",
   "repository": {
     "type": "git",
-    "url": "https://github.com/atom/toml.git"
+    "url": "https://github.com/atom/language-toml.git"
   },
   "bugs": {
-    "url": "https://github.com/atom/toml/issues"
+    "url": "https://github.com/atom/language-toml/issues"
   },
   "engines": {
     "atom": "*"
