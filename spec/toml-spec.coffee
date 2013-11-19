@@ -2,10 +2,10 @@ describe "TOML grammar", ->
   grammar = null
 
   beforeEach ->
-    spyOn(syntax, "addGrammar")
-    atom.activatePackage("language-toml", sync: true)
-    expect(syntax.addGrammar).toHaveBeenCalled()
-    grammar = syntax.addGrammar.argsForCall[0][0]
+    spyOn(atom.syntax, "addGrammar")
+    atom.packages.activatePackage("language-toml", sync: true)
+    expect(atom.syntax.addGrammar).toHaveBeenCalled()
+    [grammar] = atom.syntax.addGrammar.argsForCall[0]
 
   it "parses the grammar", ->
     expect(grammar).toBeTruthy()
