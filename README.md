@@ -1,6 +1,6 @@
 # TOML Atom package
 
-Add syntax highlighting to [TOML](https://github.com/mojombo/toml) files in
+Adds syntax highlighting to [TOML](https://github.com/mojombo/toml) files in
 Atom.
 
 Contributions are greatly appreciated. Please fork this repository and open a
