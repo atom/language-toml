@@ -58,6 +58,12 @@ describe "TOML grammar", ->
     expect(tokens[1]).toEqual value: "keygroup", scopes: ["source.toml", "keygroup.toml", "variable.keygroup.toml"]
     expect(tokens[2]).toEqual value: "]", scopes: ["source.toml", "keygroup.toml"]
 
+  it "tokenizes keygroup arrays", ->
+    {tokens} = grammar.tokenizeLine("[[keygroup]]")
+    expect(tokens[0]).toEqual value: "[[", scopes: ["source.toml", "keygroup.toml"]
+    expect(tokens[1]).toEqual value: "keygroup", scopes: ["source.toml", "keygroup.toml", "variable.keygroup.array.toml"]
+    expect(tokens[2]).toEqual value: "]]", scopes: ["source.toml", "keygroup.toml"]
+
   it "tokenizes keys", ->
     {tokens} = grammar.tokenizeLine("key =")
     expect(tokens[0]).toEqual value: "key", scopes: ["source.toml", "key.toml", "entity.key.toml"]

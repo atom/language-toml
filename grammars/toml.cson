@@ -3,6 +3,12 @@
 'fileTypes': ['toml']
 'patterns': [
   {
+    'match': '(?:^\\s*)(\\[\\[([^\\]]+)\\]\\])'
+    'captures':
+      '2': 'name': 'variable.keygroup.array.toml'
+    'name': 'keygroup.toml'
+  }
+  {
     'match': '(?:^\\s*)(\\[([^\\]]+)\\])'
     'captures':
       '2': 'name': 'variable.keygroup.toml'
