@@ -6,7 +6,7 @@ describe "TOML grammar", ->
       atom.packages.activatePackage("language-toml")
 
     runs ->
-      grammar = atom.syntax.grammarForScopeName('source.toml')
+      grammar = atom.grammars.grammarForScopeName('source.toml')
 
   it "parses the grammar", ->
     expect(grammar).toBeTruthy()
