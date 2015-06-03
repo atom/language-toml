@@ -20,7 +20,7 @@ describe "TOML grammar", ->
     {tokens} = grammar.tokenizeLine('"I am a string"')
     expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.toml", "string.begin.toml"]
     expect(tokens[1]).toEqual value: 'I am a string', scopes: ["source.toml", "string.toml"]
-    expect(tokens[2]).toEqual value: '"', scopes: ["source.toml", "string.toml","string.end.toml"]
+    expect(tokens[2]).toEqual value: '"', scopes: ["source.toml", "string.toml", "string.end.toml"]
 
     {tokens} = grammar.tokenizeLine('"I\'m \\n escaped"')
     expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.toml", "string.begin.toml"]
