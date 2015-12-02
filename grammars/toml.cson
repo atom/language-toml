@@ -3,6 +3,12 @@
 'fileTypes': ['toml']
 'patterns': [
   {
+    'match': '(#).*$'
+    'name': 'comment.line.number-sign.toml'
+    'captures':
+      '1': 'name': 'punctuation.definition.comment.toml'
+  }
+  {
     'match': '(?:^\\s*)((\\[\\[)[^\\]]+(\\]\\]))'
     'captures':
       '1': 'name': 'entity.name.section.table.array.toml'
@@ -65,10 +71,6 @@
     'endCaptures':
       '0': 'name': 'punctuation.definition.string.end.toml'
     'name': 'string.quoted.single.toml'
-  }
-  {
-    'match': '#.*$'
-    'name': 'comment.toml'
   }
   {
     'match': 'true'
