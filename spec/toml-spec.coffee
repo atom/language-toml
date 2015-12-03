@@ -14,7 +14,16 @@ describe "TOML grammar", ->
 
   it "tokenizes comments", ->
     {tokens} = grammar.tokenizeLine("# I am a comment")
-    expect(tokens[0]).toEqual value: "# I am a comment", scopes: ["source.toml", "comment.toml"]
+    expect(tokens[0]).toEqual value: "#", scopes: ["source.toml", "comment.line.number-sign.toml", "punctuation.definition.comment.toml"]
+    expect(tokens[1]).toEqual value: " I am a comment", scopes: ["source.toml", "comment.line.number-sign.toml"]
+
+    {tokens} = grammar.tokenizeLine("# = I am also a comment!")
+    expect(tokens[0]).toEqual value: "#", scopes: ["source.toml", "comment.line.number-sign.toml", "punctuation.definition.comment.toml"]
+    expect(tokens[1]).toEqual value: " = I am also a comment!", scopes: ["source.toml", "comment.line.number-sign.toml"]
+
+    {tokens} = grammar.tokenizeLine("#Nope = still a comment")
+    expect(tokens[0]).toEqual value: "#", scopes: ["source.toml", "comment.line.number-sign.toml", "punctuation.definition.comment.toml"]
+    expect(tokens[1]).toEqual value: "Nope = still a comment", scopes: ["source.toml", "comment.line.number-sign.toml"]
 
   it "tokenizes strings", ->
     {tokens} = grammar.tokenizeLine('"I am a string"')
@@ -81,7 +90,7 @@ describe "TOML grammar", ->
     expect(tokens[1]).toEqual value: "T", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.time.toml"]
     expect(tokens[2]).toEqual value: "07:32:00", scopes: ["source.toml", "constant.numeric.date.toml"]
     expect(tokens[3]).toEqual value: "Z", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.offset.toml"]
-    
+
     {tokens} = grammar.tokenizeLine("1979-05-27T00:32:00.999999-07:00")
     expect(tokens[0]).toEqual value: "1979-05-27", scopes: ["source.toml", "constant.numeric.date.toml"]
     expect(tokens[1]).toEqual value: "T", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.time.toml"]
