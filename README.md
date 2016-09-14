@@ -1,5 +1,5 @@
 # TOML language support in Atom
-[![OS X Build Status](https://travis-ci.org/atom/language-toml.png?branch=master)](https://travis-ci.org/atom/language-toml)
+[![OS X Build Status](https://travis-ci.org/atom/language-toml.svg?branch=master)](https://travis-ci.org/atom/language-toml)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/kohao3fjyk6xv0sc/branch/master?svg=true)](https://ci.appveyor.com/project/Atom/language-toml/branch/master)
 [![Dependency Status](https://david-dm.org/atom/language-toml.svg)](https://david-dm.org/atom/language-toml)
 
