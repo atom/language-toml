@@ -23,10 +23,28 @@
       '3': 'name': 'punctuation.definition.table.end.toml'
   }
   {
-    'match': '(?:^\\s*)(\\S+)\\s*(=)'
+    'match': '([A-Za-z0-9_-]+)\\s*(=)' # IMPORTANT: Do not replace with [\\w-].  \\w includes more than just a-z.
     'captures':
       '1': 'name': 'variable.other.key.toml'
-      '2': 'name': 'keyword.operator.assign.toml'
+      '2': 'name': 'keyword.operator.assignment.toml'
+  }
+  {
+    'match': '((")([\\w\\s-]*)("))\\s*(=)' # We use \\w here because quoted keys allow for a much wider variety.
+    'captures':
+      '1': 'name': 'string.quoted.double.toml'
+      '2': 'name': 'punctuation.definition.string.begin.toml'
+      '3': 'name': 'variable.other.key.toml'
+      '4': 'name': 'punctuation.definition.string.end.toml'
+      '5': 'name': 'keyword.operator.assignment.toml'
+  }
+  {
+    'match': "((')([\\w\\s-]*)('))\\s*(=)" # We use \\w here because quoted keys allow for a much wider variety.
+    'captures':
+      '1': 'name': 'string.quoted.single.toml'
+      '2': 'name': 'punctuation.definition.string.begin.toml'
+      '3': 'name': 'variable.other.key.toml'
+      '4': 'name': 'punctuation.definition.string.end.toml'
+      '5': 'name': 'keyword.operator.assignment.toml'
   }
   {
     'begin': '"""'
