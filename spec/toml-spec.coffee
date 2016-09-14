@@ -25,6 +25,10 @@ describe "TOML grammar", ->
     expect(tokens[0]).toEqual value: "#", scopes: ["source.toml", "comment.line.number-sign.toml", "punctuation.definition.comment.toml"]
     expect(tokens[1]).toEqual value: "Nope = still a comment", scopes: ["source.toml", "comment.line.number-sign.toml"]
 
+    {tokens} = grammar.tokenizeLine(" #Whitespace = tricky")
+    expect(tokens[1]).toEqual value: "#", scopes: ["source.toml", "comment.line.number-sign.toml", "punctuation.definition.comment.toml"]
+    expect(tokens[2]).toEqual value: "Whitespace = tricky", scopes: ["source.toml", "comment.line.number-sign.toml"]
+
   it "tokenizes strings", ->
     {tokens} = grammar.tokenizeLine('"I am a string"')
     expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
@@ -42,6 +46,11 @@ describe "TOML grammar", ->
     expect(tokens[0]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.begin.toml"]
     expect(tokens[1]).toEqual value: 'I am not \\n escaped', scopes: ["source.toml", "string.quoted.single.toml"]
     expect(tokens[2]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.end.toml"]
+
+    {tokens} = grammar.tokenizeLine('"Equal sign ahead = no problem"')
+    expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[1]).toEqual value: 'Equal sign ahead = no problem', scopes: ["source.toml", "string.quoted.double.toml"]
+    expect(tokens[2]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
 
   it "tokenizes multiline strings", ->
     lines = grammar.tokenizeLines '''
@@ -119,4 +128,70 @@ describe "TOML grammar", ->
     {tokens} = grammar.tokenizeLine("key =")
     expect(tokens[0]).toEqual value: "key", scopes: ["source.toml", "variable.other.key.toml"]
     expect(tokens[1]).toEqual value: " ", scopes: ["source.toml"]
-    expect(tokens[2]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assign.toml"]
+    expect(tokens[2]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
+
+    {tokens} = grammar.tokenizeLine("1key_-34 =")
+    expect(tokens[0]).toEqual value: "1key_-34", scopes: ["source.toml", "variable.other.key.toml"]
+    expect(tokens[1]).toEqual value: " ", scopes: ["source.toml"]
+    expect(tokens[2]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
+
+    {tokens} = grammar.tokenizeLine("ʎǝʞ =")
+    expect(tokens[0]).toEqual value: "ʎǝʞ =", scopes: ["source.toml"]
+
+    {tokens} = grammar.tokenizeLine("  =")
+    expect(tokens[0]).toEqual value: "  =", scopes: ["source.toml"]
+
+  it "tokenizes quoted keys", ->
+    {tokens} = grammar.tokenizeLine("'key' =")
+    expect(tokens[0]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[1]).toEqual value: "key", scopes: ["source.toml", "string.quoted.single.toml", "variable.other.key.toml"]
+    expect(tokens[2]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.end.toml"]
+    expect(tokens[3]).toEqual value: " ", scopes: ["source.toml"]
+    expect(tokens[4]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
+
+    {tokens} = grammar.tokenizeLine("'ʎǝʞ' =")
+    expect(tokens[0]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[1]).toEqual value: "ʎǝʞ", scopes: ["source.toml", "string.quoted.single.toml", "variable.other.key.toml"]
+    expect(tokens[2]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.end.toml"]
+    expect(tokens[3]).toEqual value: " ", scopes: ["source.toml"]
+    expect(tokens[4]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
+
+    {tokens} = grammar.tokenizeLine("'key with spaces' =")
+    expect(tokens[0]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[1]).toEqual value: "key with spaces", scopes: ["source.toml", "string.quoted.single.toml", "variable.other.key.toml"]
+    expect(tokens[2]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.end.toml"]
+    expect(tokens[3]).toEqual value: " ", scopes: ["source.toml"]
+    expect(tokens[4]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
+
+    {tokens} = grammar.tokenizeLine("'' =")
+    expect(tokens[0]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[1]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.end.toml"]
+    expect(tokens[2]).toEqual value: " ", scopes: ["source.toml"]
+    expect(tokens[3]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
+
+    {tokens} = grammar.tokenizeLine('"key" =')
+    expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[1]).toEqual value: "key", scopes: ["source.toml", "string.quoted.double.toml", "variable.other.key.toml"]
+    expect(tokens[2]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
+    expect(tokens[3]).toEqual value: " ", scopes: ["source.toml"]
+    expect(tokens[4]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
+
+    {tokens} = grammar.tokenizeLine('"ʎǝʞ" =')
+    expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[1]).toEqual value: "ʎǝʞ", scopes: ["source.toml", "string.quoted.double.toml", "variable.other.key.toml"]
+    expect(tokens[2]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
+    expect(tokens[3]).toEqual value: " ", scopes: ["source.toml"]
+    expect(tokens[4]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
+
+    {tokens} = grammar.tokenizeLine('"key with spaces" =')
+    expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[1]).toEqual value: "key with spaces", scopes: ["source.toml", "string.quoted.double.toml", "variable.other.key.toml"]
+    expect(tokens[2]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
+    expect(tokens[3]).toEqual value: " ", scopes: ["source.toml"]
+    expect(tokens[4]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
+
+    {tokens} = grammar.tokenizeLine('"" =')
+    expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[1]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
+    expect(tokens[2]).toEqual value: " ", scopes: ["source.toml"]
+    expect(tokens[3]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
