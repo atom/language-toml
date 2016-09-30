@@ -195,3 +195,87 @@ describe "TOML grammar", ->
     expect(tokens[1]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
     expect(tokens[2]).toEqual value: " ", scopes: ["source.toml"]
     expect(tokens[3]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
+
+  describe "firstLineMatch", ->
+    it "recognises Emacs modelines", ->
+      valid = """
+        #-*- TOML -*-
+        #-*- mode: toml -*-
+        /* -*-toml-*- */
+        // -*- TOML -*-
+        /* -*- mode:TOML -*- */
+        // -*- font:bar;mode:TOML -*-
+        // -*- font:bar;mode:TOML;foo:bar; -*-
+        // -*-font:mode;mode:TOML-*-
+        // -*- foo:bar mode: toml bar:baz -*-
+        " -*-foo:bar;mode:toml;bar:foo-*- ";
+        " -*-font-mode:foo;mode:toml;foo-bar:quux-*-"
+        "-*-font:x;foo:bar; mode : TOML; bar:foo;foooooo:baaaaar;fo:ba;-*-";
+        "-*- font:x;foo : bar ; mode : TOML ; bar : foo ; foooooo:baaaaar;fo:ba-*-";
+      """
+      for line in valid.split /\n/
+        expect(grammar.firstLineRegex.scanner.findNextMatchSync(line)).not.toBeNull()
+
+      invalid = """
+        /* --*toml-*- */
+        /* -*-- TOML -*-
+        /* -*- -- TOML -*-
+        /* -*- toml -;- -*-
+        // -*- ATOML -*-
+        // -*- TOML; -*-
+        // -*- toml-stuff -*-
+        /* -*- model:toml -*-
+        /* -*- indent-mode:toml -*-
+        // -*- font:mode;TOML -*-
+        // -*- mode: -*- TOML
+        // -*- mode: tomg-toml -*-
+        // -*-font:mode;mode:toml--*-
+      """
+      for line in invalid.split /\n/
+        expect(grammar.firstLineRegex.scanner.findNextMatchSync(line)).toBeNull()
+
+    it "recognises Vim modelines", ->
+      valid = """
+        vim: se filetype=toml:
+        # vim: se ft=toml:
+        # vim: set ft=TOML:
+        # vim: set filetype=TOML:
+        # vim: ft=TOML
+        # vim: syntax=TOML
+        # vim: se syntax=toml:
+        # ex: syntax=TOML
+        # vim:ft=toml
+        # vim600: ft=toml
+        # vim>600: set ft=toml:
+        # vi:noai:sw=3 ts=6 ft=TOML
+        # vi::::::::::noai:::::::::::: ft=TOML
+        # vim:ts=4:sts=4:sw=4:noexpandtab:ft=TOML
+        # vi:: noai : : : : sw   =3 ts   =6 ft  =ToML
+        # vim: ts=4: pi sts=4: ft=TOML: noexpandtab: sw=4:
+        # vim: ts=4 sts=4: ft=toml noexpandtab:
+        # vim:noexpandtab sts=4 ft=toml ts=4
+        # vim:noexpandtab:ft=toml
+        # vim:ts=4:sts=4 ft=toml:noexpandtab:\x20
+        # vim:noexpandtab titlestring=hi\|there\\\\ ft=toml ts=4
+      """
+      for line in valid.split /\n/
+        expect(grammar.firstLineRegex.scanner.findNextMatchSync(line)).not.toBeNull()
+
+      invalid = """
+        ex: se filetype=toml:
+        _vi: se filetype=TOML:
+         vi: se filetype=TOML
+        # vim set ft=toml
+        # vim: soft=toml
+        # vim: clean-syntax=toml:
+        # vim set ft=toml:
+        # vim: setft=TOML:
+        # vim: se ft=toml backupdir=tmp
+        # vim: set ft=toml set cmdheight=1
+        # vim:noexpandtab sts:4 ft:TOML ts:4
+        # vim:noexpandtab titlestring=hi\\|there\\ ft=TOML ts=4
+        # vim:noexpandtab titlestring=hi\\|there\\\\\\ ft=TOML ts=4
+        # vim:ft=coffee ft2=TOML
+      """
+      for line in invalid.split /\n/
+        expect(grammar.firstLineRegex.scanner.findNextMatchSync(line)).toBeNull()

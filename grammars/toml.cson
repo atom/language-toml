@@ -1,6 +1,17 @@
 'name': 'TOML'
 'scopeName': 'source.toml'
 'fileTypes': ['toml']
+'firstLineMatch': '''(?xi)
+  # Emacs modeline
+  -\\*-(?:\\s*(?=[^:;\\s]+\\s*-\\*-)|(?:.*?[;\\s]|(?<=-\\*-))mode\\s*:\\s*)
+    toml
+  (?=[\\s;]|(?<![-*])-\\*-).*?-\\*-
+  |
+  # Vim modeline
+  (?:(?:\\s|^)vi(?:m[<=>]?\\d+|m)?|\\sex)(?=:(?=\\s*set?\\s[^\\n:]+:)|:(?!\\s*set?\\s))(?:(?:\\s|\\s*:\\s*)\\w*(?:\\s*=(?:[^\\n\\\\\\s]|\\\\.)*)?)*[\\s:](?:filetype|ft|syntax)\\s*=
+    toml
+  (?=\\s|:|$)
+'''
 'patterns': [
   {
     'match': '(#).*$'
