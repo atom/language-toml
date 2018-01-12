@@ -213,6 +213,15 @@ describe "TOML grammar", ->
     expect(tokens[5]).toEqual value: " ", scopes: ["source.toml"]
     expect(tokens[6]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
 
+    {tokens} = grammar.tokenizeLine('"key with \\" quote" =')
+    expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[1]).toEqual value: "key with ", scopes: ["source.toml", "string.quoted.double.toml", "variable.other.key.toml"]
+    expect(tokens[2]).toEqual value: '\\"', scopes: ["source.toml", "string.quoted.double.toml", "variable.other.key.toml", "constant.character.escape.toml"]
+    expect(tokens[3]).toEqual value: " quote", scopes: ["source.toml", "string.quoted.double.toml", "variable.other.key.toml"]
+    expect(tokens[4]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
+    expect(tokens[5]).toEqual value: " ", scopes: ["source.toml"]
+    expect(tokens[6]).toEqual value: "=", scopes: ["source.toml", "keyword.operator.assignment.toml"]
+
     {tokens} = grammar.tokenizeLine('"" =')
     expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
     expect(tokens[1]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]

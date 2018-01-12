@@ -29,7 +29,7 @@
       '2': 'name': 'keyword.operator.assignment.toml'
   }
   {
-    'match': '((")([^"]*)("))\\s*(=)'
+    'match': '((")(.*)("))\\s*(=)' # This one is .* because " can be escaped
     'captures':
       '1': 'name': 'string.quoted.double.toml'
       '2': 'name': 'punctuation.definition.string.begin.toml'
