@@ -29,16 +29,22 @@
       '2': 'name': 'keyword.operator.assignment.toml'
   }
   {
-    'match': '((")([\\w\\s-]*)("))\\s*(=)' # We use \\w here because quoted keys allow for a much wider variety.
+    'match': '((")([^"]*)("))\\s*(=)'
     'captures':
       '1': 'name': 'string.quoted.double.toml'
       '2': 'name': 'punctuation.definition.string.begin.toml'
-      '3': 'name': 'variable.other.key.toml'
+      '3':
+        'name': 'variable.other.key.toml'
+        'patterns': [
+          {
+            'include': '#string-escapes'
+          }
+        ]
       '4': 'name': 'punctuation.definition.string.end.toml'
       '5': 'name': 'keyword.operator.assignment.toml'
   }
   {
-    'match': "((')([\\w\\s-]*)('))\\s*(=)" # We use \\w here because quoted keys allow for a much wider variety.
+    'match': "((')([^']*)('))\\s*(=)"
     'captures':
       '1': 'name': 'string.quoted.single.toml'
       '2': 'name': 'punctuation.definition.string.begin.toml'
@@ -55,8 +61,13 @@
       '0': 'name': 'punctuation.definition.string.end.toml'
     'name': 'string.quoted.double.block.toml'
     'patterns': [
-      'match': '\\\\[btnfr"\\\\]|\\\\u[A-Fa-f0-9]{4}|\\\\U[A-Fa-f0-9]{8}|\\\\$'
-      'name': 'constant.character.escape.toml'
+      {
+        'include': '#string-escapes'
+      }
+      {
+        'match': '\\\\$'
+        'name': 'constant.character.escape.toml'
+      }
     ]
   }
   {
@@ -77,8 +88,9 @@
       '0': 'name': 'punctuation.definition.string.end.toml'
     'name': 'string.quoted.double.toml'
     'patterns': [
-      'match': '\\\\[btnfr"\\\\]|\\\\u[A-Fa-f0-9]{4}|\\\\U[A-Fa-f0-9]{8}'
-      'name': 'constant.character.escape.toml'
+      {
+        'include': '#string-escapes'
+      }
     ]
   }
   {
@@ -111,3 +123,7 @@
     'name': 'constant.numeric.toml'
   }
 ]
+'repository':
+  'string-escapes':
+    'match': '\\\\[btnfr"\\\\]|\\\\u[A-Fa-f0-9]{4}|\\\\U[A-Fa-f0-9]{8}'
+    'name': 'constant.character.escape.toml'
