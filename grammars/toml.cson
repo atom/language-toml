@@ -194,6 +194,10 @@
         'name': 'constant.language.boolean.false.toml'
       }
       {
+        # Offset date-time, local date-time, local date
+        # https://github.com/toml-lang/toml#offset-date-time
+        # https://github.com/toml-lang/toml#local-date-time
+        # https://github.com/toml-lang/toml#local-date
         'match': '''(?x)
           \\d{4}-\\d{2}-\\d{2}               # YYYY-MM-DD
           (?:
@@ -208,11 +212,16 @@
         '''
         'name': 'constant.numeric.date.toml'
         'captures':
-          '1': 'name': 'keyword.other.time.toml'
-          '2': 'name': 'keyword.other.offset.toml'
-          '3': 'name': 'keyword.other.offset.toml'
+          '1':
+            'name': 'keyword.other.time.toml'
+          '2':
+            'name': 'keyword.other.offset.toml'
+          '3':
+            'name': 'keyword.other.offset.toml'
       }
       {
+        # Local time
+        # https://github.com/toml-lang/toml#local-time
         'match': '\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?'
         'name': 'constant.numeric.date.toml'
       }
