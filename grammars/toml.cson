@@ -213,6 +213,10 @@
           '3': 'name': 'keyword.other.offset.toml'
       }
       {
+        'match': '\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?'
+        'name': 'constant.numeric.date.toml'
+      }
+      {
         'match': '[+-]?(0|[1-9]\\d*)(_\\d+)*((\\.\\d+)(_\\d+)*)?([eE][+-]?\\d+(_\\d+)*)?'
         'name': 'constant.numeric.toml'
       }
