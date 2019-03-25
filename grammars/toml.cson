@@ -197,7 +197,7 @@
         'match': '''(?x)
           \\d{4}-\\d{2}-\\d{2}               # YYYY-MM-DD
           (?:
-            (T)
+            (T|[ ])                          # T or space
             \\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)? # HH:MM:SS.precision
             (?:
               (Z)
