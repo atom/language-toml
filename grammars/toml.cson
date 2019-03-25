@@ -194,7 +194,18 @@
         'name': 'constant.language.boolean.false.toml'
       }
       {
-        'match': '\\d{4}-\\d{2}-\\d{2}(?:(T)\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:(Z)|([+-])\\d{2}:\\d{2})?)?'
+        'match': '''(?x)
+          \\d{4}-\\d{2}-\\d{2}               # YYYY-MM-DD
+          (?:
+            (T)
+            \\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)? # HH:MM:SS.precision
+            (?:
+              (Z)
+              |
+              ([+-])\\d{2}:\\d{2}            # +/- HH:MM
+            )?
+          )?
+        '''
         'name': 'constant.numeric.date.toml'
         'captures':
           '1': 'name': 'keyword.other.time.toml'
