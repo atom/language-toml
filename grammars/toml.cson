@@ -3,10 +3,7 @@
 'fileTypes': ['toml']
 'patterns': [
   {
-    'match': '(#).*$'
-    'name': 'comment.line.number-sign.toml'
-    'captures':
-      '1': 'name': 'punctuation.definition.comment.toml'
+    'include': '#comment'
   }
   {
     'match': '(?:^\\s*)((\\[\\[)[^\\]]+(\\]\\]))'
@@ -23,16 +20,26 @@
       '3': 'name': 'punctuation.definition.table.end.toml'
   }
   {
-    'match': '([A-Za-z0-9_-]+)\\s*(=)' # IMPORTANT: Do not replace with [\\w-].  \\w includes more than just a-z.
-    'captures':
-      '1': 'name': 'variable.other.key.toml'
-      '2': 'name': 'keyword.operator.assignment.toml'
+    'begin': '([A-Za-z0-9_-]+)\\s*(=)\\s*' # IMPORTANT: Do not replace with [\\w-]. \\w includes more than just a-z.
+    'beginCaptures':
+      '1':
+        'name': 'variable.other.key.toml'
+      '2':
+        'name': 'keyword.operator.assignment.toml'
+    'end': '(?!\\G)'
+    'patterns': [
+      {
+        'include': '#values'
+      }
+    ]
   }
   {
-    'match': '((")(.*)("))\\s*(=)' # This one is .* because " can be escaped
-    'captures':
-      '1': 'name': 'string.quoted.double.toml'
-      '2': 'name': 'punctuation.definition.string.begin.toml'
+    'begin': '((")(.*?)("))\\s*(=)\\s*' # This one is .* because " can be escaped
+    'beginCaptures':
+      '1':
+        'name': 'string.quoted.double.toml'
+      '2':
+        'name': 'punctuation.definition.string.begin.toml'
       '3':
         'name': 'variable.other.key.toml'
         'patterns': [
@@ -40,90 +47,162 @@
             'include': '#string-escapes'
           }
         ]
-      '4': 'name': 'punctuation.definition.string.end.toml'
-      '5': 'name': 'keyword.operator.assignment.toml'
-  }
-  {
-    'match': "((')([^']*)('))\\s*(=)"
-    'captures':
-      '1': 'name': 'string.quoted.single.toml'
-      '2': 'name': 'punctuation.definition.string.begin.toml'
-      '3': 'name': 'variable.other.key.toml'
-      '4': 'name': 'punctuation.definition.string.end.toml'
-      '5': 'name': 'keyword.operator.assignment.toml'
-  }
-  {
-    'begin': '"""'
-    'beginCaptures':
-      '0': 'name': 'punctuation.definition.string.begin.toml'
-    'end': '"""'
-    'endCaptures':
-      '0': 'name': 'punctuation.definition.string.end.toml'
-    'name': 'string.quoted.double.block.toml'
+      '4':
+        'name': 'punctuation.definition.string.end.toml'
+      '5':
+        'name': 'keyword.operator.assignment.toml'
+    'end': '(?!\\G)'
     'patterns': [
       {
-        'include': '#string-escapes'
-      }
-      {
-        'match': '\\\\$'
-        'name': 'constant.character.escape.toml'
+        'include': '#values'
       }
     ]
   }
   {
-    'begin': "'''"
+    'begin': "((')([^']*)('))\\s*(=)\\s*"
     'beginCaptures':
-      '0': 'name': 'punctuation.definition.string.begin.toml'
-    'end': "'''"
-    'endCaptures':
-      '0': 'name': 'punctuation.definition.string.end.toml'
-    'name': 'string.quoted.single.block.toml'
-  }
-  {
-    'begin': '"'
-    'beginCaptures':
-      '0': 'name': 'punctuation.definition.string.begin.toml'
-    'end': '"'
-    'endCaptures':
-      '0': 'name': 'punctuation.definition.string.end.toml'
-    'name': 'string.quoted.double.toml'
+      '1':
+        'name': 'string.quoted.single.toml'
+      '2':
+        'name': 'punctuation.definition.string.begin.toml'
+      '3':
+        'name': 'variable.other.key.toml'
+      '4':
+        'name': 'punctuation.definition.string.end.toml'
+      '5':
+        'name': 'keyword.operator.assignment.toml'
+    'end': '(?!\\G)'
     'patterns': [
       {
-        'include': '#string-escapes'
+        'include': '#values'
       }
     ]
-  }
-  {
-    'begin': "'"
-    'beginCaptures':
-      '0': 'name': 'punctuation.definition.string.begin.toml'
-    'end': "'"
-    'endCaptures':
-      '0': 'name': 'punctuation.definition.string.end.toml'
-    'name': 'string.quoted.single.toml'
-  }
-  {
-    'match': 'true'
-    'name': 'constant.language.boolean.true.toml'
-  }
-  {
-    'match': 'false'
-    'name': 'constant.language.boolean.false.toml'
-  }
-  {
-    'match': '\\d{4}-\\d{2}-\\d{2}(?:(T)\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:(Z)|([+-])\\d{2}:\\d{2})?)?'
-    'name': 'constant.numeric.date.toml'
-    'captures':
-      '1': 'name': 'keyword.other.time.toml'
-      '2': 'name': 'keyword.other.offset.toml'
-      '3': 'name': 'keyword.other.offset.toml'
-  }
-  {
-    'match': '[+-]?(0|[1-9]\\d*)(_\\d+)*((\\.\\d+)(_\\d+)*)?([eE][+-]?\\d+(_\\d+)*)?'
-    'name': 'constant.numeric.toml'
   }
 ]
 'repository':
+  'comment':
+    'patterns': [
+      {
+        'match': '(#).*$'
+        'name': 'comment.line.number-sign.toml'
+        'captures':
+          '1': 'name': 'punctuation.definition.comment.toml'
+      }
+    ]
   'string-escapes':
     'match': '\\\\[btnfr"\\\\]|\\\\u[A-Fa-f0-9]{4}|\\\\U[A-Fa-f0-9]{8}'
     'name': 'constant.character.escape.toml'
+  'values':
+    'patterns': [
+      {
+        'begin': '\\['
+        'beginCaptures':
+          '0':
+            'name': 'punctuation.definition.array.begin.toml'
+        'end': '\\]'
+        'endCaptures':
+          '0':
+            'name': 'punctuation.definition.array.end.toml'
+        'patterns': [
+          {
+            'include': '#comment'
+          }
+          {
+            'match': ','
+            'name': 'punctuation.definition.separator.comma.toml'
+          }
+          {
+            'include': '#values'
+          }
+        ]
+      }
+      {
+        'begin': '{'
+        'beginCaptures':
+          '0':
+            'name': 'punctuation.definition.table.inline.begin.toml'
+        'end': '}'
+        'endCaptures':
+          '0':
+            'name': 'punctuation.definition.table.inline.end.toml'
+        'patterns': [
+          {
+            'match': ','
+            'name': 'punctuation.definition.separator.comma.toml'
+          }
+          {
+            'include': '$self'
+          }
+        ]
+      }
+      {
+        'begin': '"""'
+        'beginCaptures':
+          '0': 'name': 'punctuation.definition.string.begin.toml'
+        'end': '"""'
+        'endCaptures':
+          '0': 'name': 'punctuation.definition.string.end.toml'
+        'name': 'string.quoted.double.block.toml'
+        'patterns': [
+          {
+            'include': '#string-escapes'
+          }
+          {
+            'match': '\\\\$'
+            'name': 'constant.character.escape.toml'
+          }
+        ]
+      }
+      {
+        'begin': "'''"
+        'beginCaptures':
+          '0': 'name': 'punctuation.definition.string.begin.toml'
+        'end': "'''"
+        'endCaptures':
+          '0': 'name': 'punctuation.definition.string.end.toml'
+        'name': 'string.quoted.single.block.toml'
+      }
+      {
+        'begin': '"'
+        'beginCaptures':
+          '0': 'name': 'punctuation.definition.string.begin.toml'
+        'end': '"'
+        'endCaptures':
+          '0': 'name': 'punctuation.definition.string.end.toml'
+        'name': 'string.quoted.double.toml'
+        'patterns': [
+          {
+            'include': '#string-escapes'
+          }
+        ]
+      }
+      {
+        'begin': "'"
+        'beginCaptures':
+          '0': 'name': 'punctuation.definition.string.begin.toml'
+        'end': "'"
+        'endCaptures':
+          '0': 'name': 'punctuation.definition.string.end.toml'
+        'name': 'string.quoted.single.toml'
+      }
+      {
+        'match': 'true'
+        'name': 'constant.language.boolean.true.toml'
+      }
+      {
+        'match': 'false'
+        'name': 'constant.language.boolean.false.toml'
+      }
+      {
+        'match': '\\d{4}-\\d{2}-\\d{2}(?:(T)\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:(Z)|([+-])\\d{2}:\\d{2})?)?'
+        'name': 'constant.numeric.date.toml'
+        'captures':
+          '1': 'name': 'keyword.other.time.toml'
+          '2': 'name': 'keyword.other.offset.toml'
+          '3': 'name': 'keyword.other.offset.toml'
+      }
+      {
+        'match': '[+-]?(0|[1-9]\\d*)(_\\d+)*((\\.\\d+)(_\\d+)*)?([eE][+-]?\\d+(_\\d+)*)?'
+        'name': 'constant.numeric.toml'
+      }
+    ]
