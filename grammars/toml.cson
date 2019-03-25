@@ -194,15 +194,60 @@
         'name': 'constant.language.boolean.false.toml'
       }
       {
-        'match': '\\d{4}-\\d{2}-\\d{2}(?:(T)\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:(Z)|([+-])\\d{2}:\\d{2})?)?'
-        'name': 'constant.numeric.date.toml'
-        'captures':
-          '1': 'name': 'keyword.other.time.toml'
-          '2': 'name': 'keyword.other.offset.toml'
-          '3': 'name': 'keyword.other.offset.toml'
+        'include': '#date-time'
       }
       {
         'match': '[+-]?(0|[1-9]\\d*)(_\\d+)*((\\.\\d+)(_\\d+)*)?([eE][+-]?\\d+(_\\d+)*)?'
         'name': 'constant.numeric.toml'
+      }
+    ]
+  'date-time':
+    'patterns': [
+      {
+        # Offset date-time
+        # https://github.com/toml-lang/toml#offset-date-time
+        'match': '''(?x)
+          \\d{4}-\\d{2}-\\d{2}               # YYYY-MM-DD
+          (T|[ ])                            # T or space
+          \\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?   # HH:MM:SS.precision
+          (?:
+            (Z)
+            |
+            ([+-])\\d{2}:\\d{2}              # +/- HH:MM
+          )
+        '''
+        'name': 'constant.numeric.date.toml'
+        'captures':
+          '1':
+            'name': 'keyword.other.time.toml'
+          '2':
+            'name': 'keyword.other.offset.toml'
+          '3':
+            'name': 'keyword.other.offset.toml'
+      }
+      {
+        # Local date-time
+        # https://github.com/toml-lang/toml#local-date-time
+        'match': '''(?x)
+          \\d{4}-\\d{2}-\\d{2}               # YYYY-MM-DD
+          (T|[ ])                            # T or space
+          \\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?   # HH:MM:SS.precision
+        '''
+        'name': 'constant.numeric.date.toml'
+        'captures':
+          '1':
+            'name': 'keyword.other.time.toml'
+      }
+      {
+        # Local date
+        # https://github.com/toml-lang/toml#local-date
+        'match': '\\d{4}-\\d{2}-\\d{2}'
+        'name': 'constant.numeric.date.toml'
+      }
+      {
+        # Local time
+        # https://github.com/toml-lang/toml#local-time
+        'match': '\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?'
+        'name': 'constant.numeric.date.toml'
       }
     ]

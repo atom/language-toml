@@ -95,10 +95,16 @@ describe "TOML grammar", ->
       {tokens} = grammar.tokenizeLine("foo = #{float}")
       expect(tokens[4]).toEqual value: float, scopes: ["source.toml", "constant.numeric.toml"]
 
-  it "tokenizes dates", ->
+  it "tokenizes offset date-times", ->
     {tokens} = grammar.tokenizeLine("foo = 1979-05-27T07:32:00Z")
     expect(tokens[4]).toEqual value: "1979-05-27", scopes: ["source.toml", "constant.numeric.date.toml"]
     expect(tokens[5]).toEqual value: "T", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.time.toml"]
+    expect(tokens[6]).toEqual value: "07:32:00", scopes: ["source.toml", "constant.numeric.date.toml"]
+    expect(tokens[7]).toEqual value: "Z", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.offset.toml"]
+
+    {tokens} = grammar.tokenizeLine("foo = 1979-05-27 07:32:00Z")
+    expect(tokens[4]).toEqual value: "1979-05-27", scopes: ["source.toml", "constant.numeric.date.toml"]
+    expect(tokens[5]).toEqual value: " ", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.time.toml"]
     expect(tokens[6]).toEqual value: "07:32:00", scopes: ["source.toml", "constant.numeric.date.toml"]
     expect(tokens[7]).toEqual value: "Z", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.offset.toml"]
 
@@ -108,6 +114,20 @@ describe "TOML grammar", ->
     expect(tokens[6]).toEqual value: "00:32:00.999999", scopes: ["source.toml", "constant.numeric.date.toml"]
     expect(tokens[7]).toEqual value: "-", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.offset.toml"]
     expect(tokens[8]).toEqual value: "07:00", scopes: ["source.toml", "constant.numeric.date.toml"]
+
+  it "tokenizes local date-times", ->
+    {tokens} = grammar.tokenizeLine("foo = 1979-05-27T00:32:00.999999")
+    expect(tokens[4]).toEqual value: "1979-05-27", scopes: ["source.toml", "constant.numeric.date.toml"]
+    expect(tokens[5]).toEqual value: "T", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.time.toml"]
+    expect(tokens[6]).toEqual value: "00:32:00.999999", scopes: ["source.toml", "constant.numeric.date.toml"]
+
+  it "tokenizes local dates", ->
+    {tokens} = grammar.tokenizeLine("foo = 1979-05-27")
+    expect(tokens[4]).toEqual value: "1979-05-27", scopes: ["source.toml", "constant.numeric.date.toml"]
+
+  it "tokenizes local times", ->
+    {tokens} = grammar.tokenizeLine("foo = 00:32:00.999999")
+    expect(tokens[4]).toEqual value: "00:32:00.999999", scopes: ["source.toml", "constant.numeric.date.toml"]
 
   it "tokenizes tables", ->
     {tokens} = grammar.tokenizeLine("[table]")
