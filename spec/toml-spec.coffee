@@ -30,82 +30,84 @@ describe "TOML grammar", ->
     expect(tokens[2]).toEqual value: "Whitespace = tricky", scopes: ["source.toml", "comment.line.number-sign.toml"]
 
   it "tokenizes strings", ->
-    {tokens} = grammar.tokenizeLine('"I am a string"')
-    expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
-    expect(tokens[1]).toEqual value: 'I am a string', scopes: ["source.toml", "string.quoted.double.toml"]
-    expect(tokens[2]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
+    {tokens} = grammar.tokenizeLine('foo = "I am a string"')
+    expect(tokens[4]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[5]).toEqual value: 'I am a string', scopes: ["source.toml", "string.quoted.double.toml"]
+    expect(tokens[6]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
 
-    {tokens} = grammar.tokenizeLine('"I\'m \\n escaped"')
-    expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
-    expect(tokens[1]).toEqual value: "I'm ", scopes: ["source.toml", "string.quoted.double.toml"]
-    expect(tokens[2]).toEqual value: "\\n", scopes: ["source.toml", "string.quoted.double.toml", "constant.character.escape.toml"]
-    expect(tokens[3]).toEqual value: " escaped", scopes: ["source.toml", "string.quoted.double.toml"]
-    expect(tokens[4]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
+    {tokens} = grammar.tokenizeLine('foo = "I\'m \\n escaped"')
+    expect(tokens[4]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[5]).toEqual value: "I'm ", scopes: ["source.toml", "string.quoted.double.toml"]
+    expect(tokens[6]).toEqual value: "\\n", scopes: ["source.toml", "string.quoted.double.toml", "constant.character.escape.toml"]
+    expect(tokens[7]).toEqual value: " escaped", scopes: ["source.toml", "string.quoted.double.toml"]
+    expect(tokens[8]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
 
-    {tokens} = grammar.tokenizeLine("'I am not \\n escaped'")
-    expect(tokens[0]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.begin.toml"]
-    expect(tokens[1]).toEqual value: 'I am not \\n escaped', scopes: ["source.toml", "string.quoted.single.toml"]
-    expect(tokens[2]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.end.toml"]
+    {tokens} = grammar.tokenizeLine("foo = 'I am not \\n escaped'")
+    expect(tokens[4]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[5]).toEqual value: 'I am not \\n escaped', scopes: ["source.toml", "string.quoted.single.toml"]
+    expect(tokens[6]).toEqual value: "'", scopes: ["source.toml", "string.quoted.single.toml", "punctuation.definition.string.end.toml"]
 
-    {tokens} = grammar.tokenizeLine('"Equal sign ahead = no problem"')
-    expect(tokens[0]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
-    expect(tokens[1]).toEqual value: 'Equal sign ahead = no problem', scopes: ["source.toml", "string.quoted.double.toml"]
-    expect(tokens[2]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
+    {tokens} = grammar.tokenizeLine('foo = "Equal sign ahead = no problem"')
+    expect(tokens[4]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.begin.toml"]
+    expect(tokens[5]).toEqual value: 'Equal sign ahead = no problem', scopes: ["source.toml", "string.quoted.double.toml"]
+    expect(tokens[6]).toEqual value: '"', scopes: ["source.toml", "string.quoted.double.toml", "punctuation.definition.string.end.toml"]
+
+  it "does not tokenize equal signs within strings", ->
+    {tokens} = grammar.tokenizeLine('pywinusb = { version = "*", os_name = "==\'nt\'", index="pypi"}')
+    expect(tokens[20]).toEqual value: "=='nt'", scopes: ["source.toml", "string.quoted.double.toml"]
 
   it "tokenizes multiline strings", ->
-    lines = grammar.tokenizeLines '''
-      """
+    lines = grammar.tokenizeLines '''foo = """
       I am a\\
       string
       """
     '''
-    expect(lines[0][0]).toEqual value: '"""', scopes: ["source.toml", "string.quoted.double.block.toml", "punctuation.definition.string.begin.toml"]
+    expect(lines[0][4]).toEqual value: '"""', scopes: ["source.toml", "string.quoted.double.block.toml", "punctuation.definition.string.begin.toml"]
     expect(lines[1][0]).toEqual value: 'I am a', scopes: ["source.toml", "string.quoted.double.block.toml"]
     expect(lines[1][1]).toEqual value: '\\', scopes: ["source.toml", "string.quoted.double.block.toml", "constant.character.escape.toml"]
     expect(lines[2][0]).toEqual value: 'string', scopes: ["source.toml", "string.quoted.double.block.toml"]
     expect(lines[3][0]).toEqual value: '"""', scopes: ["source.toml", "string.quoted.double.block.toml", "punctuation.definition.string.end.toml"]
 
-    lines = grammar.tokenizeLines """
-      '''
+    lines = grammar.tokenizeLines """foo = '''
       I am a\\
       string
       '''
     """
-    expect(lines[0][0]).toEqual value: "'''", scopes: ["source.toml", "string.quoted.single.block.toml", "punctuation.definition.string.begin.toml"]
+    expect(lines[0][4]).toEqual value: "'''", scopes: ["source.toml", "string.quoted.single.block.toml", "punctuation.definition.string.begin.toml"]
     expect(lines[1][0]).toEqual value: 'I am a\\', scopes: ["source.toml", "string.quoted.single.block.toml"]
     expect(lines[2][0]).toEqual value: 'string', scopes: ["source.toml", "string.quoted.single.block.toml"]
     expect(lines[3][0]).toEqual value: "'''", scopes: ["source.toml", "string.quoted.single.block.toml", "punctuation.definition.string.end.toml"]
 
   it "tokenizes booleans", ->
-    {tokens} = grammar.tokenizeLine("true")
-    expect(tokens[0]).toEqual value: "true", scopes: ["source.toml", "constant.language.boolean.true.toml"]
+    {tokens} = grammar.tokenizeLine("foo = true")
+    expect(tokens[4]).toEqual value: "true", scopes: ["source.toml", "constant.language.boolean.true.toml"]
 
-    {tokens} = grammar.tokenizeLine("false")
-    expect(tokens[0]).toEqual value: "false", scopes: ["source.toml", "constant.language.boolean.false.toml"]
+    {tokens} = grammar.tokenizeLine("foo = false")
+    expect(tokens[4]).toEqual value: "false", scopes: ["source.toml", "constant.language.boolean.false.toml"]
 
   it "tokenizes integers", ->
     for int in ["+99", "42", "0", "-17", "1_000", "1_2_3_4_5"]
-      {tokens} = grammar.tokenizeLine(int)
-      expect(tokens[0]).toEqual value: int, scopes: ["source.toml", "constant.numeric.toml"]
+      {tokens} = grammar.tokenizeLine("foo = #{int}")
+      expect(tokens[4]).toEqual value: int, scopes: ["source.toml", "constant.numeric.toml"]
 
   it "tokenizes floats", ->
     for float in ["+1.0", "3.1415", "-0.01", "5e+22", "1e6", "-2E-2", "6.626e-34", "6.626e-34", "9_224_617.445_991_228_313", "1e1_000"]
-      {tokens} = grammar.tokenizeLine(float)
-      expect(tokens[0]).toEqual value: float, scopes: ["source.toml", "constant.numeric.toml"]
+      {tokens} = grammar.tokenizeLine("foo = #{float}")
+      expect(tokens[4]).toEqual value: float, scopes: ["source.toml", "constant.numeric.toml"]
 
   it "tokenizes dates", ->
-    {tokens} = grammar.tokenizeLine("1979-05-27T07:32:00Z")
-    expect(tokens[0]).toEqual value: "1979-05-27", scopes: ["source.toml", "constant.numeric.date.toml"]
-    expect(tokens[1]).toEqual value: "T", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.time.toml"]
-    expect(tokens[2]).toEqual value: "07:32:00", scopes: ["source.toml", "constant.numeric.date.toml"]
-    expect(tokens[3]).toEqual value: "Z", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.offset.toml"]
+    {tokens} = grammar.tokenizeLine("foo = 1979-05-27T07:32:00Z")
+    expect(tokens[4]).toEqual value: "1979-05-27", scopes: ["source.toml", "constant.numeric.date.toml"]
+    expect(tokens[5]).toEqual value: "T", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.time.toml"]
+    expect(tokens[6]).toEqual value: "07:32:00", scopes: ["source.toml", "constant.numeric.date.toml"]
+    expect(tokens[7]).toEqual value: "Z", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.offset.toml"]
 
-    {tokens} = grammar.tokenizeLine("1979-05-27T00:32:00.999999-07:00")
-    expect(tokens[0]).toEqual value: "1979-05-27", scopes: ["source.toml", "constant.numeric.date.toml"]
-    expect(tokens[1]).toEqual value: "T", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.time.toml"]
-    expect(tokens[2]).toEqual value: "00:32:00.999999", scopes: ["source.toml", "constant.numeric.date.toml"]
-    expect(tokens[3]).toEqual value: "-", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.offset.toml"]
-    expect(tokens[4]).toEqual value: "07:00", scopes: ["source.toml", "constant.numeric.date.toml"]
+    {tokens} = grammar.tokenizeLine("foo = 1979-05-27T00:32:00.999999-07:00")
+    expect(tokens[4]).toEqual value: "1979-05-27", scopes: ["source.toml", "constant.numeric.date.toml"]
+    expect(tokens[5]).toEqual value: "T", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.time.toml"]
+    expect(tokens[6]).toEqual value: "00:32:00.999999", scopes: ["source.toml", "constant.numeric.date.toml"]
+    expect(tokens[7]).toEqual value: "-", scopes: ["source.toml", "constant.numeric.date.toml", "keyword.other.offset.toml"]
+    expect(tokens[8]).toEqual value: "07:00", scopes: ["source.toml", "constant.numeric.date.toml"]
 
   it "tokenizes tables", ->
     {tokens} = grammar.tokenizeLine("[table]")
