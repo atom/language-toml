@@ -90,10 +90,44 @@ describe "TOML grammar", ->
       {tokens} = grammar.tokenizeLine("foo = #{int}")
       expect(tokens[4]).toEqual value: int, scopes: ["source.toml", "constant.numeric.toml"]
 
+  it "does not tokenize a number with leading zeros as an integer", ->
+    {tokens} = grammar.tokenizeLine("foo = 01")
+    expect(tokens[4]).toEqual value: "01", scopes: ["source.toml", "invalid.illegal.toml"]
+
+  it "does not tokenize a number with an underscore not followed by a digit as an integer", ->
+    {tokens} = grammar.tokenizeLine("foo = 1__2")
+    expect(tokens[4]).toEqual value: "1__2", scopes: ["source.toml", "invalid.illegal.toml"]
+
+    {tokens} = grammar.tokenizeLine("foo = 1_")
+    expect(tokens[4]).toEqual value: "1_", scopes: ["source.toml", "invalid.illegal.toml"]
+
+  it "tokenizes hex integers", ->
+    for int in ["0xDEADBEEF", "0xdeadbeef", "0xdead_beef"]
+      {tokens} = grammar.tokenizeLine("foo = #{int}")
+      expect(tokens[4]).toEqual value: int, scopes: ["source.toml", "constant.numeric.hex.toml"]
+
+  it "tokenizes octal integers", ->
+    {tokens} = grammar.tokenizeLine("foo = 0o755")
+    expect(tokens[4]).toEqual value: "0o755", scopes: ["source.toml", "constant.numeric.octal.toml"]
+
+  it "tokenizes binary integers", ->
+    {tokens} = grammar.tokenizeLine("foo = 0b11010110")
+    expect(tokens[4]).toEqual value: "0b11010110", scopes: ["source.toml", "constant.numeric.binary.toml"]
+
+  it "does not tokenize a number followed by other characters as a number", ->
+    {tokens} = grammar.tokenizeLine("foo = 0xdeadbeefs")
+    expect(tokens[4]).toEqual value: "0xdeadbeefs", scopes: ["source.toml", "invalid.illegal.toml"]
+
   it "tokenizes floats", ->
     for float in ["+1.0", "3.1415", "-0.01", "5e+22", "1e6", "-2E-2", "6.626e-34", "6.626e-34", "9_224_617.445_991_228_313", "1e1_000"]
       {tokens} = grammar.tokenizeLine("foo = #{float}")
       expect(tokens[4]).toEqual value: float, scopes: ["source.toml", "constant.numeric.toml"]
+
+  it "tokenizes inf and nan", ->
+    for sign in ["+", "-", ""]
+      for float in ["inf", "nan"]
+        {tokens} = grammar.tokenizeLine("foo = #{sign}#{float}")
+        expect(tokens[4]).toEqual value: "#{sign}#{float}", scopes: ["source.toml", "constant.numeric.#{float}.toml"]
 
   it "tokenizes offset date-times", ->
     {tokens} = grammar.tokenizeLine("foo = 1979-05-27T07:32:00Z")

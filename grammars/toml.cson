@@ -197,8 +197,11 @@
         'include': '#date-time'
       }
       {
-        'match': '[+-]?(0|[1-9]\\d*)(_\\d+)*((\\.\\d+)(_\\d+)*)?([eE][+-]?\\d+(_\\d+)*)?'
-        'name': 'constant.numeric.toml'
+        'include': '#numbers'
+      }
+      {
+        'match': '.+'
+        'name': 'invalid.illegal.toml'
       }
     ]
   'date-time':
@@ -249,5 +252,43 @@
         # https://github.com/toml-lang/toml#local-time
         'match': '\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?'
         'name': 'constant.numeric.date.toml'
+      }
+    ]
+  'numbers':
+    # https://github.com/toml-lang/toml#integer
+    'patterns': [
+      {
+        # Handles decimal integers & floats
+        'match': '''(?x)
+          [+-]?                    # Optional +/-
+          (
+            0                      # Just a zero
+            |
+            [1-9](_?\\d)*          # Or a non-zero number (no leading zeros allowed)
+          )
+          (\\.\\d(_?\\d)*)?        # Optional fractional portion
+          ([eE][+-]?\\d(_?\\d)*)?  # Optional exponent
+          \\b
+        '''
+        'name': 'constant.numeric.toml'
+      }
+      {
+        'match': '[+-]?(inf|nan)\\b'
+        'name': 'constant.numeric.$1.toml'
+      }
+      {
+        # Hex
+        'match': '0x[0-9A-Fa-f](_?[0-9A-Fa-f])*\\b'
+        'name': 'constant.numeric.hex.toml'
+      }
+      {
+        # Octal
+        'match': '0o[0-7](_?[0-7])*\\b'
+        'name': 'constant.numeric.octal.toml'
+      }
+      {
+        # Binary
+        'match': '0b[01](_?[01])*\\b'
+        'name': 'constant.numeric.binary.toml'
       }
     ]
