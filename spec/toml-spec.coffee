@@ -58,25 +58,88 @@ describe "TOML grammar", ->
 
   it "tokenizes multiline strings", ->
     lines = grammar.tokenizeLines '''foo = """
-      I am a\\
+      I am a
       string
       """
     '''
     expect(lines[0][4]).toEqual value: '"""', scopes: ["source.toml", "string.quoted.double.block.toml", "punctuation.definition.string.begin.toml"]
     expect(lines[1][0]).toEqual value: 'I am a', scopes: ["source.toml", "string.quoted.double.block.toml"]
-    expect(lines[1][1]).toEqual value: '\\', scopes: ["source.toml", "string.quoted.double.block.toml", "constant.character.escape.toml"]
     expect(lines[2][0]).toEqual value: 'string', scopes: ["source.toml", "string.quoted.double.block.toml"]
     expect(lines[3][0]).toEqual value: '"""', scopes: ["source.toml", "string.quoted.double.block.toml", "punctuation.definition.string.end.toml"]
 
     lines = grammar.tokenizeLines """foo = '''
-      I am a\\
+      I am a
       string
       '''
     """
     expect(lines[0][4]).toEqual value: "'''", scopes: ["source.toml", "string.quoted.single.block.toml", "punctuation.definition.string.begin.toml"]
-    expect(lines[1][0]).toEqual value: 'I am a\\', scopes: ["source.toml", "string.quoted.single.block.toml"]
+    expect(lines[1][0]).toEqual value: 'I am a', scopes: ["source.toml", "string.quoted.single.block.toml"]
     expect(lines[2][0]).toEqual value: 'string', scopes: ["source.toml", "string.quoted.single.block.toml"]
     expect(lines[3][0]).toEqual value: "'''", scopes: ["source.toml", "string.quoted.single.block.toml", "punctuation.definition.string.end.toml"]
+
+  it "tokenizes escape characters in double-quoted multiline strings", ->
+    lines = grammar.tokenizeLines '''foo = """
+      I am\\u0020a
+      \\qstring
+      with\\UaBcDE3F2escape characters\\nyay
+      """
+    '''
+    expect(lines[0][4]).toEqual value: '"""', scopes: ["source.toml", "string.quoted.double.block.toml", "punctuation.definition.string.begin.toml"]
+    expect(lines[1][0]).toEqual value: 'I am', scopes: ["source.toml", "string.quoted.double.block.toml"]
+    expect(lines[1][1]).toEqual value: '\\u0020', scopes: ["source.toml", "string.quoted.double.block.toml", "constant.character.escape.toml"]
+    expect(lines[2][0]).toEqual value: '\\qstring', scopes: ["source.toml", "string.quoted.double.block.toml"]
+    expect(lines[3][0]).toEqual value: 'with', scopes: ["source.toml", "string.quoted.double.block.toml"]
+    expect(lines[3][1]).toEqual value: '\\UaBcDE3F2', scopes: ["source.toml", "string.quoted.double.block.toml", "constant.character.escape.toml"]
+    expect(lines[3][2]).toEqual value: 'escape characters', scopes: ["source.toml", "string.quoted.double.block.toml"]
+    expect(lines[3][3]).toEqual value: '\\n', scopes: ["source.toml", "string.quoted.double.block.toml", "constant.character.escape.toml"]
+    expect(lines[3][4]).toEqual value: 'yay', scopes: ["source.toml", "string.quoted.double.block.toml"]
+    expect(lines[4][0]).toEqual value: '"""', scopes: ["source.toml", "string.quoted.double.block.toml", "punctuation.definition.string.end.toml"]
+
+  it "tokenizes line continuation characters in double-quoted multiline strings", ->
+    lines = grammar.tokenizeLines '''foo = """
+      I am a
+      string \\
+      with line-continuation\\ \t
+      yay
+      """
+    '''
+    expect(lines[0][4]).toEqual value: '"""', scopes: ["source.toml", "string.quoted.double.block.toml", "punctuation.definition.string.begin.toml"]
+    expect(lines[1][0]).toEqual value: 'I am a', scopes: ["source.toml", "string.quoted.double.block.toml"]
+    expect(lines[2][0]).toEqual value: 'string ', scopes: ["source.toml", "string.quoted.double.block.toml"]
+    expect(lines[2][1]).toEqual value: '\\', scopes: ["source.toml", "string.quoted.double.block.toml", "constant.character.escape.toml"]
+    expect(lines[3][0]).toEqual value: 'with line-continuation', scopes: ["source.toml", "string.quoted.double.block.toml"]
+    expect(lines[3][1]).toEqual value: '\\', scopes: ["source.toml", "string.quoted.double.block.toml", "constant.character.escape.toml"]
+    expect(lines[3][2]).toEqual value: ' \t', scopes: ["source.toml", "string.quoted.double.block.toml"]
+    expect(lines[4][0]).toEqual value: 'yay', scopes: ["source.toml", "string.quoted.double.block.toml"]
+    expect(lines[5][0]).toEqual value: '"""', scopes: ["source.toml", "string.quoted.double.block.toml", "punctuation.definition.string.end.toml"]
+
+  it "tokenizes escape characters in double-quoted multiline strings", ->
+    lines = grammar.tokenizeLines """foo = '''
+      I am\\u0020a
+      \\qstring
+      with\\UaBcDE3F2no escape characters\\naw
+      '''
+    """
+    expect(lines[0][4]).toEqual value: "'''", scopes: ["source.toml", "string.quoted.single.block.toml", "punctuation.definition.string.begin.toml"]
+    expect(lines[1][0]).toEqual value: 'I am\\u0020a', scopes: ["source.toml", "string.quoted.single.block.toml"]
+    expect(lines[2][0]).toEqual value: '\\qstring', scopes: ["source.toml", "string.quoted.single.block.toml"]
+    expect(lines[3][0]).toEqual value: 'with\\UaBcDE3F2no escape characters\\naw', scopes: ["source.toml", "string.quoted.single.block.toml"]
+    expect(lines[4][0]).toEqual value: "'''", scopes: ["source.toml", "string.quoted.single.block.toml", "punctuation.definition.string.end.toml"]
+
+  it "does not tokenize line continuation characters in single-quoted multiline strings", ->
+    lines = grammar.tokenizeLines """foo = '''
+      I am a
+      string \\
+      with no line-continuation\\ \t
+      aw
+      '''
+    """
+    expect(lines[0][4]).toEqual value: "'''", scopes: ["source.toml", "string.quoted.single.block.toml", "punctuation.definition.string.begin.toml"]
+    expect(lines[1][0]).toEqual value: 'I am a', scopes: ["source.toml", "string.quoted.single.block.toml"]
+    expect(lines[2][0]).toEqual value: 'string \\', scopes: ["source.toml", "string.quoted.single.block.toml"]
+    expect(lines[3][0]).toEqual value: 'with no line-continuation\\ \t', scopes: ["source.toml", "string.quoted.single.block.toml"]
+    expect(lines[4][0]).toEqual value: 'aw', scopes: ["source.toml", "string.quoted.single.block.toml"]
+    expect(lines[5][0]).toEqual value: "'''", scopes: ["source.toml", "string.quoted.single.block.toml", "punctuation.definition.string.end.toml"]
 
   it "tokenizes booleans", ->
     {tokens} = grammar.tokenizeLine("foo = true")
