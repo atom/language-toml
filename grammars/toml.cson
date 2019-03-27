@@ -148,7 +148,8 @@
             'include': '#string-escapes'
           }
           {
-            'match': '\\\\$'
+            # Line continuation with backslashes
+            'match': '\\\\(?=\\s*$)'
             'name': 'constant.character.escape.toml'
           }
         ]
