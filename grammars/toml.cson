@@ -20,7 +20,7 @@
       '3': 'name': 'punctuation.definition.table.end.toml'
   }
   {
-    'begin': '([A-Za-z0-9_-]+)\\s*(=)\\s*' # IMPORTANT: Do not replace with [\\w-]. \\w includes more than just a-z.
+    'begin': '([A-Za-z0-9_-]+)(?:\\.(")(.*?)("))*\\s*(=)\\s*' # IMPORTANT: Do not replace with [\\w-]. \\w includes more than just a-z.
     'beginCaptures':
       '1':
         'name': 'variable.other.key.toml'
