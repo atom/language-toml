@@ -1,4 +1,5 @@
-# TOML language support in Atom
+##### Atom and all repositories under Atom will be archived on December 15, 2022. Learn more in our [official announcement](https://github.blog/2022-06-08-sunsetting-atom/)
+ # TOML language support in Atom
 [![OS X Build Status](https://travis-ci.org/atom/language-toml.svg?branch=master)](https://travis-ci.org/atom/language-toml)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/kohao3fjyk6xv0sc/branch/master?svg=true)](https://ci.appveyor.com/project/Atom/language-toml/branch/master)
 [![Dependency Status](https://david-dm.org/atom/language-toml.svg)](https://david-dm.org/atom/language-toml)
